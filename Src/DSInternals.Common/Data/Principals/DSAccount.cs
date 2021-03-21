@@ -15,7 +15,7 @@
             Validator.AssertNotNull(dsObject, nameof(dsObject));
             Validator.AssertNotNull(netBIOSDomainName, nameof(netBIOSDomainName));
 
-            if (!dsObject.IsAccount)
+            if (!dsObject.IsAccount && !dsObject.IsContact)
             {
                 throw new ArgumentException(Resources.ObjectNotAccountMessage);
             }
@@ -233,6 +233,18 @@
         }
 
         /// <summary>
+        /// Gets the thumbnail photo.
+        /// </summary>
+        /// <value>
+        /// Thumbnailphoto.
+        /// </value>
+        public byte[] ThumbnailPhoto
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Indicates that a given object has had its ACLs changed to a more secure value
         /// by the system because it was a member of one of the administrative groups
         /// (directly or transitively).
@@ -368,10 +380,6 @@
             dsObject.ReadAttribute(CommonDirectoryAttributes.ServicePrincipalName, out string[] spn);
             this.ServicePrincipalName = spn;
 
-            // UAC:
-            dsObject.ReadAttribute(CommonDirectoryAttributes.UserAccountControl, out int? numericUac);
-            this.UserAccountControl = (UserAccountControl)numericUac.Value;
-
             // Deleted:
             dsObject.ReadAttribute(CommonDirectoryAttributes.IsDeleted, out bool isDeleted);
             this.Deleted = isDeleted;
@@ -386,19 +394,32 @@
             // UPN:
             dsObject.ReadAttribute(CommonDirectoryAttributes.UserPrincipalName, out string upn);
             this.UserPrincipalName = upn;
+    
+            if (dsObject.IsContact)
+            {
+                // Thumbnail photo
+                dsObject.ReadAttribute(CommonDirectoryAttributes.ThumbnailPhoto, out byte[] thumb);
+                this.ThumbnailPhoto = thumb;
+            }
+            else
+            {
+                // UAC:
+                dsObject.ReadAttribute(CommonDirectoryAttributes.UserAccountControl, out int? numericUac);
+                this.UserAccountControl = (UserAccountControl)numericUac.Value;
 
-            // SamAccountName + LogonName:
-            dsObject.ReadAttribute(CommonDirectoryAttributes.SAMAccountName, out string samAccountName);
-            this.SamAccountName = samAccountName;
-            this.LogonName = new NTAccount(netBIOSDomainName, samAccountName).Value;
+                // SamAccountName + LogonName:
+                dsObject.ReadAttribute(CommonDirectoryAttributes.SAMAccountName, out string samAccountName);
+                this.SamAccountName = samAccountName;
+                this.LogonName = new NTAccount(netBIOSDomainName, samAccountName).Value;
 
-            // SamAccountType:
-            dsObject.ReadAttribute(CommonDirectoryAttributes.SamAccountType, out int? numericAccountType);
-            this.SamAccountType = (SamAccountType)numericAccountType.Value;
+                // SamAccountType:
+                dsObject.ReadAttribute(CommonDirectoryAttributes.SamAccountType, out int? numericAccountType);
+                this.SamAccountType = (SamAccountType)numericAccountType.Value;
 
-            // PrimaryGroupId
-            dsObject.ReadAttribute(CommonDirectoryAttributes.PrimaryGroupId, out int? groupId);
-            this.PrimaryGroupId = groupId.Value;
+                // PrimaryGroupId
+                dsObject.ReadAttribute(CommonDirectoryAttributes.PrimaryGroupId, out int? groupId);
+                this.PrimaryGroupId = groupId.Value;
+            }
         }
 
         protected void LoadHashes(DirectoryObject dsObject, DirectorySecretDecryptor pek)
