@@ -121,6 +121,8 @@
         public const int SurnameId = 4;
         public const string SystemFlags = "systemFlags";
         public const string SystemOnly = "systemOnly";
+        public const string ThumbnailPhoto = "thumbnailPhoto";
+        public const int ThumbnailPhotoId = 1441827;
         public const string UnixUserPassword = "unixUserPassword";
         public const string UserAccountControl = "userAccountControl";
         public const int UserAccountControlId = 589832;

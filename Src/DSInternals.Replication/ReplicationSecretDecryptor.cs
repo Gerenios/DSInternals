@@ -1,9 +1,10 @@
-﻿using DSInternals.Common;
-using DSInternals.Common.Cryptography;
+﻿//using DSInternals.Common;
+//using DSInternals.Common.Cryptography;
 using System;
 
 namespace DSInternals.Replication
 {
+    /*
     public class ReplicationSecretDecryptor : DirectorySecretDecryptor
     {
         private const int SaltOffset = 0;
@@ -61,4 +62,5 @@ namespace DSInternals.Replication
             throw new NotImplementedException("We will never act as a replication source so secret encryption is out of scope.");
         }
     }
+    */
 }

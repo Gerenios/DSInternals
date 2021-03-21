@@ -21,12 +21,12 @@
   </PropertyGroup>
   <!-- Signing configuration -->
   <PropertyGroup>
-    <DoSign Condition=" '$(Configuration)'=='Release' ">true</DoSign>
+    <DoSign Condition=" '$(Configuration)'=='Release' ">false</DoSign>
     <DoSign Condition=" '$(Configuration)'=='Debug' ">false</DoSign>
     <KeyPath>..\..\Keys</KeyPath>
     <PublicKeyPath>$(KeyPath)\DSInternals.Public.snk</PublicKeyPath>
     <PrivateKeyPath>$(KeyPath)\DSInternals.Private.snk</PrivateKeyPath>
-    <PerformDelaySign Condition=" !Exists('$(PrivateKeyPath)') ">true</PerformDelaySign>
+    <PerformDelaySign Condition=" !Exists('$(PrivateKeyPath)') ">false</PerformDelaySign>
     <PerformDelaySign Condition=" Exists('$(PrivateKeyPath)') ">false</PerformDelaySign>
     <SigningKeyPath Condition=" '$(PerformDelaySign)' == 'true' ">$(PublicKeyPath)</SigningKeyPath>
     <SigningKeyPath Condition=" '$(PerformDelaySign)' == 'false' ">$(PrivateKeyPath)</SigningKeyPath>

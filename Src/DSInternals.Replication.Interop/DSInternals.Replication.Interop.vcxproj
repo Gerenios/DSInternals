@@ -233,15 +233,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DSInternals.Common\DSInternals.Common.csproj">
-      <Project>{7d47f040-d3a9-43ca-9f69-ef91faf2c23a}</Project>
-      <CopyLocal>false</CopyLocal>
-      <Private>false</Private>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-    </ProjectReference>
     <ProjectReference Include="..\DSInternals.Replication.Model\DSInternals.Replication.Model.csproj">
       <Project>{0bca513c-5f12-48b6-8288-d3a95ec2994a}</Project>
       <CopyLocal>false</CopyLocal>

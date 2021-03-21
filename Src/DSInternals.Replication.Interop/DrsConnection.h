@@ -11,7 +11,7 @@ namespace DSInternals
 	{
 		namespace Interop
 		{
-			using namespace DSInternals::Common::Data;
+			//using namespace DSInternals::Common::Data;
 			using namespace DSInternals::Replication::Model;
 			using namespace System::Security::Principal;
 			using namespace Microsoft::Win32::SafeHandles;

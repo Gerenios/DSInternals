@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "RpcTypeConverter.h"
 
-using namespace DSInternals::Common;
+//using namespace DSInternals::Common;
 using namespace System;
 using namespace System::Runtime::InteropServices;
 using namespace std;
@@ -62,7 +62,7 @@ namespace DSInternals
 			midl_ptr<DSNAME> RpcTypeConverter::ToDsName(String^ distinguishedName)
 			{
 				// Validate the parameter
-				Validator::AssertNotNullOrWhiteSpace(distinguishedName, "distinguishedName");
+				//Validator::AssertNotNullOrWhiteSpace(distinguishedName, "distinguishedName");
 
 				// Allocate and initialize the DSNAME struct
 				auto dnLen = distinguishedName->Length;

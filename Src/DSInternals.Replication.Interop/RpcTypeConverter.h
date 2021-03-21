@@ -3,7 +3,7 @@
 #include "drsr_addons.h"
 #include "drsr_alloc.h"
 
-using namespace DSInternals::Common::Data;
+//using namespace DSInternals::Common::Data;
 using namespace DSInternals::Replication::Model;
 using namespace System;
 using namespace System::Security::Principal;

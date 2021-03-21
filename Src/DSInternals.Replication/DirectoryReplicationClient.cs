@@ -1,4 +1,4 @@
-﻿using DSInternals.Common.Data;
+﻿//using DSInternals.Common.Data;
 using DSInternals.Replication.Model;
 using DSInternals.Replication.Interop;
 using NDceRpc;
@@ -8,9 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Security.Principal;
-using DSInternals.Common.Interop;
-using DSInternals.Common.Cryptography;
-using DSInternals.Common;
+//using DSInternals.Common.Interop;
+//using DSInternals.Common.Cryptography;
+//using DSInternals.Common;
 
 namespace DSInternals.Replication
 {
@@ -39,7 +39,7 @@ namespace DSInternals.Replication
 
         private NativeClient rpcConnection;
         private DrsConnection drsConnection;
-        private NamedPipeConnection npConnection;
+        //private NamedPipeConnection npConnection;
         private string domainNamingContext;
         private string netBIOSDomainName;
 
@@ -53,6 +53,14 @@ namespace DSInternals.Replication
                     this.LoadDomainInfo();
                 }
                 return this.domainNamingContext;
+            }
+        }
+
+        public byte[] SessionKey
+        {
+            get
+            {
+                return this.drsConnection.SessionKey;
             }
         }
 
@@ -71,18 +79,18 @@ namespace DSInternals.Replication
 
         public DirectoryReplicationClient(string server, RpcProtocol protocol, NetworkCredential credential = null)
         {
-            Validator.AssertNotNullOrWhiteSpace(server, nameof(server));
+            //Validator.AssertNotNullOrWhiteSpace(server, nameof(server));
             this.CreateRpcConnection(server, protocol, credential);
             this.drsConnection = new DrsConnection(this.rpcConnection.Binding, NtdsApiClientGuid);
         }
 
         public ReplicationCursor[] GetReplicationCursors(string namingContext)
         {
-            Validator.AssertNotNullOrWhiteSpace(namingContext, nameof(namingContext));
+            //Validator.AssertNotNullOrWhiteSpace(namingContext, nameof(namingContext));
             return this.drsConnection.GetReplicationCursors(namingContext);
         }
 
-        public IEnumerable<DSAccount> GetAccounts(string domainNamingContext, ReplicationProgressHandler progressReporter = null)
+        /*public IEnumerable<DSAccount> GetAccounts(string domainNamingContext, ReplicationProgressHandler progressReporter = null)
         {
             Validator.AssertNotNullOrWhiteSpace(domainNamingContext, nameof(domainNamingContext));
             ReplicationCookie cookie = new ReplicationCookie(domainNamingContext);
@@ -134,8 +142,14 @@ namespace DSInternals.Replication
             obj.Schema = schema;
             return new DSAccount(obj, this.NetBIOSDomainName, this.SecretDecryptor);
         }
+        */
+        public ReplicaObject GetReplicaObject(Guid objectGuid)
+        {
+            var obj = this.drsConnection.ReplicateSingleObject(objectGuid);
+            return obj;
+        }
 
-        public IEnumerable<DPAPIBackupKey> GetDPAPIBackupKeys(string domainNamingContext)
+        /*public IEnumerable<DPAPIBackupKey> GetDPAPIBackupKeys(string domainNamingContext)
         {
             // TODO: Move schema from constructor to property?
             // TODO: Split this function into RSA and Legacy Part so that exception in one of them does not crash the whole process
@@ -186,7 +200,7 @@ namespace DSInternals.Replication
             Guid objectGuid = this.drsConnection.ResolveGuid(sid);
             return this.GetAccount(objectGuid);
         }
-
+        */
         public void WriteNgcKey(Guid objectGuid, byte[] publicKey)
         {
             string distinguishedName = this.drsConnection.ResolveDistinguishedName(objectGuid);
@@ -210,18 +224,19 @@ namespace DSInternals.Replication
             this.drsConnection.WriteNgcKey(accountDN, publicKey);
         }
 
-        private DirectorySecretDecryptor SecretDecryptor
+        /*private DirectorySecretDecryptor SecretDecryptor
         {
             get
             {
                 return new ReplicationSecretDecryptor(this.drsConnection.SessionKey);
             }
-        }
+        }*/
 
         private void CreateRpcConnection(string server, RpcProtocol protocol, NetworkCredential credential = null)
         {
             EndpointBindingInfo binding;
-            switch(protocol)
+            binding = new EndpointBindingInfo(RpcProtseq.ncacn_ip_tcp, server, null);
+            /*switch (protocol)
             {
                 case RpcProtocol.TCP:
                     binding = new EndpointBindingInfo(RpcProtseq.ncacn_ip_tcp, server, null);
@@ -237,7 +252,7 @@ namespace DSInternals.Replication
                 default:
                     // TODO: Extract as string
                     throw new NotImplementedException("The requested RPC protocol is not supported.");
-            }
+            }*/
             this.rpcConnection = new NativeClient(binding);
 
             NetworkCredential rpcCredential = credential ?? Client.Self;
@@ -270,17 +285,17 @@ namespace DSInternals.Replication
                 this.rpcConnection = null;
             }
 
-            if(this.npConnection != null)
+            /*if(this.npConnection != null)
             {
                 this.npConnection.Dispose();
                 this.npConnection = null;
-            }
+            }*/
         }
 
         private void LoadDomainInfo()
         {
             // These is no direct way of retrieving current DC's domain info, so we are using a combination of 3 calls.
-
+            /*
             // We first retrieve FSMO roles. The PDC emulator lies in the same domain as the current server.
             var fsmoRoles = this.drsConnection.ListRoles();
 
@@ -297,6 +312,7 @@ namespace DSInternals.Replication
             // Get the PDC Emulator's NetBIOS account name and extract the domain part.
             NTAccount pdcAccount = this.drsConnection.ResolveAccountName(pdcAccountDN);
             this.netBIOSDomainName = pdcAccount.NetBIOSDomainName();
+            */
         }
     }
 }

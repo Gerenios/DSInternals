@@ -1,4 +1,4 @@
-﻿using DSInternals.Common;
+﻿//using DSInternals.Common;
 using System;
 using System.Runtime.Serialization;
 
@@ -12,12 +12,12 @@ namespace DSInternals.Replication.Model
     {
         public ReplicationCookie(string namingContext)
         {
-            Validator.AssertNotNullOrWhiteSpace(namingContext, "namingContext");
+            //Validator.AssertNotNullOrWhiteSpace(namingContext, "namingContext");
             this.NamingContext = namingContext;
         }
         public ReplicationCookie(string namingContext, Guid invocationId, Int64 highObjectUpdate, Int64 highPropUpdate, Int64 reserved)
         {
-            Validator.AssertNotNullOrWhiteSpace(namingContext, "namingContext");
+            //Validator.AssertNotNullOrWhiteSpace(namingContext, "namingContext");
             this.NamingContext = namingContext;
             this.InvocationId = invocationId;
             this.HighObjUpdate = highObjectUpdate;

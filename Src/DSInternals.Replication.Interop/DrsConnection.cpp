@@ -2,9 +2,9 @@
 #include "DrsConnection.h"
 #include "RpcTypeConverter.h"
 
-using namespace DSInternals::Common;
-using namespace DSInternals::Common::Exceptions;
-using namespace DSInternals::Common::Interop;
+//using namespace DSInternals::Common;
+//using namespace DSInternals::Common::Exceptions;
+//using namespace DSInternals::Common::Interop;
 using namespace DSInternals::Replication::Model;
 
 using namespace System;
@@ -61,7 +61,7 @@ namespace DSInternals
 
 				// Bind
 				ULONG result = IDL_DRSBind_NoSEH(rpcHandle.ToPointer(), &clientDsaUuid, (DRS_EXTENSIONS*)clientInfo.get(), &genericServerInfo, &drsHandle);
-				Validator::AssertSuccess((Win32ErrorCode)result);
+				//Validator::AssertSuccess((Win32ErrorCode)result);
 
 				// Prevent memory leak by storing the genericServerInfo in midl_ptr
 				auto genericServerInfoSafePtr = midl_ptr<DRS_EXTENSIONS>(genericServerInfo);
@@ -111,7 +111,7 @@ namespace DSInternals
 			array<ReplicationCursor^>^ DrsConnection::GetReplicationCursors(String^ namingContext)
 			{
 				this->ValidateConnection();
-				Validator::AssertNotNullOrEmpty(namingContext, nameof(namingContext));
+				//Validator::AssertNotNullOrEmpty(namingContext, nameof(namingContext));
 
 				// Prepare the parameters
 				DRS_HANDLE handle = this->handle.ToPointer();
@@ -125,7 +125,7 @@ namespace DSInternals
 				auto result = IDL_DRSGetReplInfo_NoSEH(handle, inVersion, (DRS_MSG_GETREPLINFO_REQ*)request.get(), &outVersion, &reply);
 
 				// Validate the return code
-				Validator::AssertSuccess((Win32ErrorCode)result);
+				//Validator::AssertSuccess((Win32ErrorCode)result);
 
 				// Prevent memory leak by storing the cursors in midl_ptr
 				auto cursors = midl_ptr<DS_REPL_CURSORS>(reply.pCursors);
@@ -219,7 +219,7 @@ namespace DSInternals
 			ReplicationResult^ DrsConnection::ReplicateAllObjects(ReplicationCookie^ cookie, array<ATTRTYP>^ partialAttributeSet, ULONG maxBytes, ULONG maxObjects)
 			{
 				// Validate parameters
-				Validator::AssertNotNull(cookie, nameof(cookie));
+				//Validator::AssertNotNull(cookie, nameof(cookie));
 
 				auto request = CreateReplicateAllRequest(cookie, partialAttributeSet, maxBytes, maxObjects);
 				auto reply = GetNCChanges(move(request));
@@ -238,28 +238,28 @@ namespace DSInternals
 
 			ReplicaObject^ DrsConnection::ReplicateSingleObject(String^ distinguishedName, array<ATTRTYP>^ partialAttributeSet)
 			{
-				Validator::AssertNotNullOrEmpty(distinguishedName, nameof(distinguishedName));
+				//Validator::AssertNotNullOrEmpty(distinguishedName, nameof(distinguishedName));
 
-				try
-				{
+				//try
+				//{
 					auto request = CreateReplicateSingleRequest(distinguishedName, partialAttributeSet);
 					auto reply = GetNCChanges(move(request));
 					auto objects = ReadObjects(reply->pObjects, reply->cNumObjects, reply->rgValues, reply->cNumValues);
 					return objects[0];
-				}
-				catch (DirectoryObjectNotFoundException^)
+				/*}
+				catch ()//DirectoryObjectNotFoundException^)
 				{
 					// ReplicateSingleObject also exits with this error when access is denied, so we need to differentiate between these situations.
 					bool objectExists = this->TestObjectExistence(distinguishedName);
 					if (objectExists)
 					{
 						// Force the validator to throw the DRA access denied exception.
-						Validator::AssertSuccess(Win32ErrorCode::DS_DRA_ACCESS_DENIED);
+						//Validator::AssertSuccess(Win32ErrorCode::DS_DRA_ACCESS_DENIED);
 					}
 
 					// Rethrow the original exception otherwise, as the object really does not exists.
 					throw;
-				}
+				}*/
 			}
 
 			ReplicaObject^ DrsConnection::ReplicateSingleObject(Guid objectGuid)
@@ -269,15 +269,15 @@ namespace DSInternals
 
 			ReplicaObject^ DrsConnection::ReplicateSingleObject(Guid objectGuid, array<ATTRTYP>^ partialAttributeSet)
 			{
-				try
-				{
+				//try
+				//{
 					auto request = CreateReplicateSingleRequest(objectGuid, partialAttributeSet);
 					auto reply = GetNCChanges(move(request));
 					auto objects = ReadObjects(reply->pObjects, reply->cNumObjects, reply->rgValues, reply->cNumValues);
 
 					// There should be only one object in the results.
 					return objects[0];
-				}
+				/*}
 				catch (DirectoryObjectNotFoundException^)
 				{
 					// ReplicateSingleObject also exits with this error when access is denied, so we need to differentiate between these situations.
@@ -290,7 +290,7 @@ namespace DSInternals
 
 					// Rethrow the original exception otherwise, as the object really does not exists.
 					throw;
-				}
+				}*/
 			}
 
 			midl_ptr<DRS_MSG_GETCHGREPLY_V9> DrsConnection::GetNCChanges(midl_ptr<DRS_MSG_GETCHGREQ_V10>&& request)
@@ -301,10 +301,10 @@ namespace DSInternals
 				DWORD outVersion = 0;
 				auto reply = make_midl_ptr<DRS_MSG_GETCHGREPLY_V9>();
 				// Send message:
-				auto result = (Win32ErrorCode)IDL_DRSGetNCChanges_NoSEH(handle, inVersion, (DRS_MSG_GETCHGREQ*)request.get(), &outVersion, (DRS_MSG_GETCHGREPLY*)reply.get());
+				auto result = IDL_DRSGetNCChanges_NoSEH(handle, inVersion, (DRS_MSG_GETCHGREQ*)request.get(), &outVersion, (DRS_MSG_GETCHGREPLY*)reply.get());
 
 				// Validate result
-				Validator::AssertSuccess(result);
+				//Validator::AssertSuccess(result);
 
 				// Check the returned structure version
 				if (outVersion == 6 && reply->cNumValues > 0)
@@ -336,13 +336,13 @@ namespace DSInternals
 				midl_ptr<DRS_MSG_CRACKREPLY_V1> reply = make_midl_ptr<DRS_MSG_CRACKREPLY_V1>();
 				DRS_HANDLE handle = this->handle.ToPointer();
 				auto result = IDL_DRSCrackNames_NoSEH(handle, inVersion, (DRS_MSG_CRACKREQ*)request.get(), &outVersion, (DRS_MSG_CRACKREPLY*)reply.get());
-				Validator::AssertSuccess((Win32ErrorCode)result);
+				//Validator::AssertSuccess((Win32ErrorCode)result);
 				return reply;
 			}
 
 			String^ DrsConnection::ResolveDistinguishedName(NTAccount^ accountName)
 			{
-				Validator::AssertNotNull(accountName, nameof(accountName));
+				//Validator::AssertNotNull(accountName, nameof(accountName));
 				auto stringAccountName = accountName->Value;
 				bool isUPN = stringAccountName->Contains(UpnSeparator);
 				auto nameFormat = isUPN ? DS_NAME_FORMAT::DS_USER_PRINCIPAL_NAME : DS_NAME_FORMAT::DS_NT4_ACCOUNT_NAME;
@@ -351,7 +351,7 @@ namespace DSInternals
 
 			String^ DrsConnection::ResolveDistinguishedName(SecurityIdentifier^ objectSid)
 			{
-				Validator::AssertNotNull(objectSid, nameof(objectSid));
+				//Validator::AssertNotNull(objectSid, nameof(objectSid));
 				auto stringSid = objectSid->ToString();
 				return this->ResolveName(stringSid, DS_NAME_FORMAT::DS_SID_OR_SID_HISTORY_NAME, DS_NAME_FORMAT::DS_FQDN_1779_NAME, true);
 			}
@@ -364,7 +364,7 @@ namespace DSInternals
 
 			Guid DrsConnection::ResolveGuid(NTAccount^ accountName)
 			{
-				Validator::AssertNotNull(accountName, nameof(accountName));
+				//Validator::AssertNotNull(accountName, nameof(accountName));
 				auto stringAccountName = accountName->Value;
 				bool isUPN = stringAccountName->Contains(DrsConnection::UpnSeparator);
 				auto nameFormat = isUPN ? DS_NAME_FORMAT::DS_USER_PRINCIPAL_NAME : DS_NAME_FORMAT::DS_NT4_ACCOUNT_NAME;
@@ -374,7 +374,7 @@ namespace DSInternals
 
 			Guid DrsConnection::ResolveGuid(SecurityIdentifier^ objectSid)
 			{
-				Validator::AssertNotNull(objectSid, nameof(objectSid));
+				//Validator::AssertNotNull(objectSid, nameof(objectSid));
 				auto stringSid = objectSid->ToString();
 				auto stringGuid = this->ResolveName(stringSid, DS_NAME_FORMAT::DS_SID_OR_SID_HISTORY_NAME, DS_NAME_FORMAT::DS_UNIQUE_ID_NAME, true);
 				return Guid::Parse(stringGuid);
@@ -382,7 +382,7 @@ namespace DSInternals
 
 			NTAccount^ DrsConnection::ResolveAccountName(String^ distinguishedName)
 			{
-				Validator::AssertNotNullOrEmpty(distinguishedName, nameof(distinguishedName));
+				//Validator::AssertNotNullOrEmpty(distinguishedName, nameof(distinguishedName));
 				String^ result = this->ResolveName(distinguishedName, DS_NAME_FORMAT::DS_FQDN_1779_NAME, DS_NAME_FORMAT::DS_NT4_ACCOUNT_NAME, true);
 				return gcnew NTAccount(result);
 			}
@@ -409,11 +409,11 @@ namespace DSInternals
 
 				// Process the response
 				auto result = reply->pResult;
-				if (mustExist == true && result->cItems == 0)
+				/*if (mustExist == true && result->cItems == 0)
 				{
 					throw gcnew DirectoryObjectNotFoundException(names[0], nullptr);
 				}
-
+				*/
 				array<String^>^ resolvedNames = gcnew array<String^>(result->cItems);
 				for (DWORD i = 0; i < result->cItems; i++)
 				{
@@ -425,10 +425,10 @@ namespace DSInternals
 					else
 					{
 						// Object was not resolved
-						if (mustExist == true)
+						/*if (mustExist == true)
 						{
 							throw gcnew DirectoryObjectNotFoundException(names[i], nullptr);
-						}
+						}*/
 					}
 				}
 
@@ -497,20 +497,20 @@ namespace DSInternals
 
 			array<String^>^ DrsConnection::ListServersInSite(String^ name)
 			{
-				Validator::AssertNotNullOrEmpty(name, nameof(name));
+				//Validator::AssertNotNullOrEmpty(name, nameof(name));
 				return this->ListInfo(DS_NAME_FORMAT_EXT::DS_LIST_SERVERS_IN_SITE, name);
 			}
 
 			array<String^>^ DrsConnection::ListDomainsInSite(String^ name)
 			{
-				Validator::AssertNotNullOrEmpty(name, nameof(name));
+				//Validator::AssertNotNullOrEmpty(name, nameof(name));
 				return this->ListInfo(DS_NAME_FORMAT_EXT::DS_LIST_DOMAINS_IN_SITE, name);
 			}
 
 			DomainControllerInformation^ DrsConnection::ListInfoForServer(String^ distinguishedName)
 			{
 				// Input validation
-				Validator::AssertNotNullOrEmpty(distinguishedName, nameof(distinguishedName));
+				//Validator::AssertNotNullOrEmpty(distinguishedName, nameof(distinguishedName));
 
 				// Retrieve info
 				auto result = this->ListInfo(DS_NAME_FORMAT_EXT::DS_LIST_INFO_FOR_SERVER, distinguishedName);
@@ -525,7 +525,7 @@ namespace DSInternals
 
 			bool DrsConnection::TestObjectExistence(String^ distinguishedName)
 			{
-				Validator::AssertNotNullOrEmpty(distinguishedName, nameof(distinguishedName));
+				//Validator::AssertNotNullOrEmpty(distinguishedName, nameof(distinguishedName));
 				auto resolvedName = this->ResolveName(distinguishedName, DS_NAME_FORMAT::DS_FQDN_1779_NAME, DS_NAME_FORMAT::DS_UNIQUE_ID_NAME, false);
 				// Return true if and only if the object exists
 				return resolvedName != nullptr;
@@ -543,8 +543,8 @@ namespace DSInternals
 			{
 				this->ValidateConnection();
 				// Input validation
-				Validator::AssertNotNullOrEmpty(distinguishedName, nameof(distinguishedName));
-				Validator::AssertNotNull(key, nameof(key));
+				//Validator::AssertNotNullOrEmpty(distinguishedName, nameof(distinguishedName));
+				//Validator::AssertNotNull(key, nameof(key));
 
 				DRS_HANDLE handle = this->handle.ToPointer();
 
@@ -561,8 +561,9 @@ namespace DSInternals
 				DWORD outVersion = 0;
 
 				// Send the key to AD
-				auto result = (NtStatus)IDL_DRSWriteNgcKey_NoSEH(handle, inVersion, (DRS_MSG_WRITENGCKEYREQ*)request.get(), &outVersion, (DRS_MSG_WRITENGCKEYREPLY*)reply.get());
+				auto result = IDL_DRSWriteNgcKey_NoSEH(handle, inVersion, (DRS_MSG_WRITENGCKEYREQ*)request.get(), &outVersion, (DRS_MSG_WRITENGCKEYREPLY*)reply.get());
 
+				/*
 				if (result == NtStatus::ObjectNameNotFound)
 				{
 					throw gcnew DirectoryObjectNotFoundException(distinguishedName, nullptr);
@@ -571,7 +572,7 @@ namespace DSInternals
 				{
 					// Validate the result
 					Validator::AssertSuccess(result);
-				}
+				}*/
 			}
 
 			bool DrsConnection::ReleaseHandle()

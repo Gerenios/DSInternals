@@ -56,11 +56,6 @@
     <Compile Include="ReplicationSecretDecryptor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DSInternals.Common\DSInternals.Common.csproj">
-      <Project>{7d47f040-d3a9-43ca-9f69-ef91faf2c23a}</Project>
-      <Name>DSInternals.Common</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\DSInternals.Replication.Interop\DSInternals.Replication.Interop.vcxproj">
       <Project>{a70a6658-dd67-4c73-ab9a-581465137c6b}</Project>
       <Name>DSInternals.Replication.Interop</Name>

@@ -1,4 +1,4 @@
-﻿using DSInternals.Common;
+﻿//using DSInternals.Common;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,7 +17,7 @@ namespace DSInternals.Replication.Model
 
         public void Add(ReplicaAttribute attribute)
         {
-            Validator.AssertNotNull(attribute, "attribute");
+            //Validator.AssertNotNull(attribute, "attribute");
 
             ReplicaAttribute preexistingAttribute;
             bool attributeAlreadyPresent = this.TryGetValue(attribute.Id, out preexistingAttribute);

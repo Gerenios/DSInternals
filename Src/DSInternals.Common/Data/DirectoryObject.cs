@@ -130,6 +130,24 @@
                 }
             }
         }
+
+        public bool IsContact
+        {
+            get
+            {
+                byte[][] objectClasses;
+                this.ReadAttribute(CommonDirectoryAttributes.ObjectClass, out objectClasses);
+                foreach (byte[] objectClass in objectClasses)
+                {
+                    // 0x000a000f = contact
+                    if (BitConverter.ToInt32(objectClass, 0) == 0x000a000f) 
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
         // TODO: No schema exception?
         public bool IsSecurityPrincipal
         {
